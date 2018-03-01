@@ -1,0 +1,44 @@
+diff --git a/contrib/search_api_views/includes/handler_filter_date.inc b/contrib/search_api_views/includes/handler_filter_date.inc
+index 4b856dd..91e984a 100644
+--- a/contrib/search_api_views/includes/handler_filter_date.inc
++++ b/contrib/search_api_views/includes/handler_filter_date.inc
+@@ -43,6 +43,14 @@ class SearchApiViewsHandlerFilterDate extends SearchApiViewsHandlerFilter {
+         '#default_value' => $this->options['widget_type'],
+         '#options' => $widget_options,
+       );
++      if ($this->options['widget_type'] == 'date_popup') {
++        $form['search_api_views_date_popup_date_format'] = array(
++          '#type' => 'textfield',
++          '#title' => t('Date format for Date popups'),
++          '#description' => t('Note: this format will apply to all date popup widgets in Search API-based views.'),
++          '#default_value' => variable_get('search_api_views_date_popup_date_format', 'm/d/Y'),
++        );
++      }
+     }
+ 
+     if (module_exists('date_api')) {
+@@ -65,6 +73,15 @@ class SearchApiViewsHandlerFilterDate extends SearchApiViewsHandlerFilter {
+   }
+ 
+   /**
++   * Submit extra options.
++   */
++  public function extra_options_submit($form, &$form_state) {
++    if (isset($form_state['values']['options']['search_api_views_date_popup_date_format'])) {
++      variable_set('search_api_views_date_popup_date_format', $form_state['values']['options']['search_api_views_date_popup_date_format']);
++    }
++  }
++
++  /**
+    * Provide a form for setting the filter value.
+    */
+   public function value_form(&$form, &$form_state) {
+@@ -74,7 +91,7 @@ class SearchApiViewsHandlerFilterDate extends SearchApiViewsHandlerFilter {
+     // according to what date_popup expects.
+     if ($this->options['widget_type'] == 'date_popup' && module_exists('date_popup')) {
+       $form['value']['#type'] = 'date_popup';
+-      $form['value']['#date_format'] = 'm/d/Y';
++      $form['value']['#date_format'] = variable_get('search_api_views_date_popup_date_format', 'm/d/Y');
+       $form['value']['#date_year_range'] = $this->options['year_range'];
+       unset($form['value']['#description']);
+     }

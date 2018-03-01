@@ -1,0 +1,74 @@
+version: "3.1"
+
+services:
+  
+  httpd:
+    image: httpd:2.4
+    ports:
+      # In port 80, there is Varnish.
+      - "8081:80"
+    volumes:
+      - "./docker/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf"
+      - "./docroot:/var/www/docroot:ro"
+    restart: unless-stopped
+
+  php:
+    image: wellnetimages/php:5.6.18
+    expose:
+      - 9000
+    volumes:
+      - "./docker/php/php.ini:/usr/local/etc/php/conf.d/php.ini"
+      - "./docker/php/ssmtp.conf:/etc/ssmtp/ssmtp.conf"
+      - "./docroot:/var/www/docroot"
+      - "./data/settings.local.php:/var/www/docroot/sites/default/settings.local.php"
+      # Used for problem permission.
+      # - "./docker/permission-user.sh:/tmp/permission-user.sh"
+      # Used for problem permission.
+      # command: sh /tmp/permission-user.sh
+    environment:
+      AH_SITE_ENVIRONMENT: local
+    restart: unless-stopped
+
+  drush:
+    container_name: pr1_drush_1
+    image: wellnetimages/php:5.6.18
+    ports:
+      - "2223:22"
+    volumes:
+      #- "./docker/ssh_keys/authorized_keys:/root/.ssh/authorized_keys"
+      - "./docker/php/drush.ini:/usr/local/etc/php/conf.d/drush.ini"
+      - "./docker/php/ssmtp.conf:/etc/ssmtp/ssmtp.conf"
+      - "./docroot:/var/www/docroot"
+      - "./data/settings.local.php:/var/www/docroot/sites/default/settings.local.php"
+      - "solr_data:/opt/solr/example/solr/data"
+      # Used for problem permission.
+      # - "./docker/permission-user.sh:/tmp/permission-user-drush.sh"
+    command: /usr/sbin/sshd -D
+      # Used for problem permission.
+      # command: sh /tmp/permission-user-drush.sh
+    environment:
+      AH_SITE_ENVIRONMENT: local
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:5.7.11
+    ports:
+      - "3307:3306"
+    volumes:
+      - "./docker/mysql/custom.cnf:/etc/mysql/conf.d/custom.cnf"
+      - "db_data:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: drupal
+      MYSQL_USER: drupal
+      MYSQL_PASSWORD: drupal
+    restart: unless-stopped
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "8025:8025"
+    restart: unless-stopped
+
+volumes:
+  db_data:
