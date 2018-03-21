@@ -30,7 +30,7 @@ services:
     restart: unless-stopped
 
   drush:
-    container_name: pr1_drush_1
+    container_name: pr3_drush_1
     image: wellnetimages/php:5.6.18
     ports:
       - "2223:22"
@@ -40,7 +40,6 @@ services:
       - "./docker/php/ssmtp.conf:/etc/ssmtp/ssmtp.conf"
       - "./docroot:/var/www/docroot"
       - "./data/settings.local.php:/var/www/docroot/sites/default/settings.local.php"
-      - "solr_data:/opt/solr/example/solr/data"
       # Used for problem permission.
       # - "./docker/permission-user.sh:/tmp/permission-user-drush.sh"
     command: /usr/sbin/sshd -D

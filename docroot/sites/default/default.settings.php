@@ -346,21 +346,6 @@ ini_set('session.cookie_lifetime', 2000000);
 # $conf['anonymous'] = 'Visitor';
 
 /**
- * VARIABILI HIS
- */
-$conf['user_register'] = 0;
-$conf['site_frontpage'] = 'civicrm/dashboard/';
-$conf['site_name'] = 'crm.hyperlocal.it';
-$conf['site_403'] = 'his_crm_idm_ras_external_login';
-$conf['syslog_facility'] = 128;
-$conf['syslog_format'] = '|Type=!type|!message';
-$conf['syslog_identity'] = 'his-crm-drupal';
-
-$conf['site_mail'] = 'admin@hyperlocal.it';
-
-$conf['realname_pattern'] = '[user:field-idm-nome] [user:field-idm-cognome]';
-
-/**
  * A custom theme can be set for the offline page. This applies when the site
  * is explicitly set to maintenance mode through the administration page or when
  * the database is inactive due to an error. It can be set through the
@@ -598,40 +583,3 @@ $conf['404_fast_html'] = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
  * Remove the leading hash sign to enable.
  */
 # $conf['theme_debug'] = TRUE;
-
-if (isset($_ENV['AH_SITE_ENVIRONMENT'])) {
-	
-	$settingfilename = "/data/settings/settings.".$_ENV['AH_SITE_ENVIRONMENT'].".php";
-	$conf['his_site_environment'] = $_ENV['AH_SITE_ENVIRONMENT'];
-	
-	if (file_exists($settingfilename)) {
-		include $settingfilename;
-	}	
-	
-  switch ($_ENV['AH_SITE_ENVIRONMENT']) {
-    case 'dev':
-
-      break;
-
-    case 'test':
-      // do something on staging
-      break;
-
-    case 'prod':
-      // do something on prod
-      break;
-
-    case 'ra':
-      // do something on ra - necessary if an ra environment is present
-      break;
-  }
-} 
-else {
-    // do something for a non-Acquia-hosted website (like a local dev install).
-    $conf['his_site_environment'] = 'dev_inera';
-    $settingfilename = dirname(__FILE__) . "/settings.dev_inera.php";
-    
-	if (file_exists($settingfilename)) {
-			include $settingfilename;
-	}
-}
